@@ -1,0 +1,182 @@
+:root {
+    --md-sys-color-background: #141218;
+    --md-sys-color-surface: #1D1B20;
+    --md-sys-color-surface-container: #211F26;
+    --md-sys-color-primary: #D0BCFF;
+    --md-sys-color-on-primary: #381E72;
+    --md-sys-color-primary-container: #4F378B;
+    --md-sys-color-on-primary-container: #EADDFF;
+    --md-sys-color-on-surface: #E6E1E5;
+    --md-sys-color-on-surface-variant: #CAC4D0;
+    --md-sys-color-outline: #938F99;
+    --md-sys-color-surface-variant: #49454F;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--md-sys-color-background);
+    color: var(--md-sys-color-on-surface);
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+header {
+    padding: 16px 24px;
+    background-color: var(--md-sys-color-surface);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    elevation: 2;
+}
+
+header h1 {
+    font-size: 22px;
+    font-weight: 400;
+}
+
+main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    padding: 24px;
+    height: 100%;
+    overflow: hidden;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.input-wrapper {
+    position: relative;
+    background-color: var(--md-sys-color-surface-container);
+    border-radius: 4px 4px 0 0;
+    border-bottom: 1px solid var(--md-sys-color-outline);
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.input-wrapper:focus-within {
+    border-bottom: 2px solid var(--md-sys-color-primary);
+}
+
+textarea {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    color: var(--md-sys-color-on-surface);
+    font-size: 16px;
+    font-family: 'Roboto', sans-serif;
+    padding: 16px;
+    resize: none;
+    outline: none;
+}
+
+textarea::placeholder {
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.btn {
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    border: none;
+    padding: 0 24px;
+    height: 40px;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: opacity 0.2s;
+}
+
+.btn-primary {
+    align-self: flex-start;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+.btn:active {
+    opacity: 0.8;
+}
+
+.btn-icon {
+    background: transparent;
+    color: var(--md-sys-color-primary);
+    border: 1px solid var(--md-sys-color-outline);
+    padding: 0 16px; /* Reduzi um pouco o padding lateral do botão do card */
+}
+
+/* --- Mudanças principais aqui --- */
+.card {
+    background-color: var(--md-sys-color-surface-container);
+    border-radius: 12px;
+    padding: 16px;
+    /* Mudança para CSS Grid */
+    display: grid;
+    grid-template-columns: 1fr auto; /* Uma coluna flexível para texto, uma automática para o botão */
+    align-items: center; /* Centraliza verticalmente o conteúdo */
+    gap: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    background-color: var(--md-sys-color-surface-variant);
+}
+
+/* Novo contêiner para agrupar título e URL */
+.card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow: hidden; /* Garante que o texto longo não quebre o layout */
+}
+
+.card-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--md-sys-color-on-surface);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-url {
+    font-size: 12px;
+    color: var(--md-sys-color-on-surface-variant);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+/* .card-actions foi removido */
+
+@media (max-width: 768px) {
+    main {
+        grid-template-columns: 1fr;
+        overflow-y: auto;
+    }
+    .column {
+        height: auto;
+        min-height: 300px;
+    }
+}
