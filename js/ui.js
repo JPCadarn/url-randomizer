@@ -108,8 +108,6 @@ export class UIManager {
 
         const openBtn = document.createElement('button');
         openBtn.className = 'btn-icon';
-        openBtn.style.width = 'auto';
-        openBtn.style.padding = '0 12px';
 
         const updateOpenBtnState = (isOpened) => {
             if (isOpened) {
