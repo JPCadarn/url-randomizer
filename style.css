@@ -1,15 +1,15 @@
 :root {
-    --md-sys-color-background: #141218;
-    --md-sys-color-surface: #1D1B20;
-    --md-sys-color-surface-container: #211F26;
-    --md-sys-color-primary: #D0BCFF;
-    --md-sys-color-on-primary: #381E72;
-    --md-sys-color-primary-container: #4F378B;
-    --md-sys-color-on-primary-container: #EADDFF;
-    --md-sys-color-on-surface: #E6E1E5;
-    --md-sys-color-on-surface-variant: #CAC4D0;
-    --md-sys-color-outline: #938F99;
-    --md-sys-color-surface-variant: #49454F;
+    --md-sys-color-background: #191210;
+    --md-sys-color-surface: #201A18;
+    --md-sys-color-surface-container: #251F1D;
+    --md-sys-color-primary: #F75200;
+    --md-sys-color-on-primary: #FFFFFF;
+    --md-sys-color-primary-container: #3E1805;
+    --md-sys-color-on-primary-container: #FFDBCF;
+    --md-sys-color-on-surface: #EDE0DB;
+    --md-sys-color-on-surface-variant: #D7C1B9;
+    --md-sys-color-outline: #A08C84;
+    --md-sys-color-surface-variant: #52433E;
 }
 
 * {
@@ -34,7 +34,8 @@ header {
     display: flex;
     align-items: center;
     gap: 12px;
-    elevation: 2;
+    elevation: below;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
 header h1 {
@@ -46,7 +47,7 @@ main {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 24px;
-    padding: 24px;
+    padding: 24px 24px 90px;
     height: 100%;
     overflow: hidden;
 }
@@ -57,19 +58,24 @@ main {
     gap: 16px;
     height: 100%;
     overflow-y: auto;
+
+    scrollbar-width: thin;
+    scrollbar-color: var(--md-sys-color-surface-variant) transparent;
 }
 
 .input-wrapper {
     position: relative;
     background-color: var(--md-sys-color-surface-container);
-    border-radius: 4px 4px 0 0;
-    border-bottom: 1px solid var(--md-sys-color-outline);
+    border-radius: 12px;
+    border: 1px solid var(--md-sys-color-outline);
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+    transition: border-color 0.2s;
 }
 
 .input-wrapper:focus-within {
+    border: 2px solid var(--md-sys-color-primary);
     border-bottom: 2px solid var(--md-sys-color-primary);
 }
 
@@ -90,11 +96,45 @@ textarea::placeholder {
     color: var(--md-sys-color-on-surface-variant);
 }
 
-.btn {
+.fab-extended {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    height: 56px;
+    padding: 0 24px;
     background-color: var(--md-sys-color-primary);
     color: var(--md-sys-color-on-primary);
     border: none;
-    padding: 0 24px;
+    border-radius: 16px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px 3px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10;
+}
+
+.fab-extended:hover {
+    box-shadow: 0 6px 12px 4px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.3);
+    background-color: #FF6a22;
+    transform: scale(1.02);
+}
+
+.fab-extended:active {
+    box-shadow: 0 2px 4px 2px rgba(0, 0, 0, 0.15);
+    transform: scale(0.98);
+}
+
+.btn-icon {
+    background: transparent;
+    color: var(--md-sys-color-primary);
+    border: 1px solid var(--md-sys-color-outline);
+    padding: 0 16px;
     height: 40px;
     border-radius: 20px;
     font-weight: 500;
@@ -104,52 +144,52 @@ textarea::placeholder {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    transition: opacity 0.2s;
+    transition: background 0.2s;
 }
 
-.btn-primary {
-    align-self: flex-start;
+.btn-icon:hover {
+    background-color: rgba(247, 82, 0, 0.08);
+    border-color: var(--md-sys-color-primary);
 }
 
-.btn:hover {
-    opacity: 0.9;
-}
-
-.btn:active {
-    opacity: 0.8;
-}
-
-.btn-icon {
-    background: transparent;
-    color: var(--md-sys-color-primary);
-    border: 1px solid var(--md-sys-color-outline);
-    padding: 0 16px; /* Reduzi um pouco o padding lateral do botão do card */
-}
-
-/* --- Mudanças principais aqui --- */
 .card {
     background-color: var(--md-sys-color-surface-container);
     border-radius: 12px;
     padding: 16px;
-    /* Mudança para CSS Grid */
     display: grid;
-    grid-template-columns: 1fr auto; /* Uma coluna flexível para texto, uma automática para o botão */
-    align-items: center; /* Centraliza verticalmente o conteúdo */
+    grid-template-columns: 1fr auto;
+    align-items: center;
     gap: 16px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-    transition: transform 0.2s;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    transition: all 0.2s;
 }
 
 .card:hover {
     background-color: var(--md-sys-color-surface-variant);
 }
 
-/* Novo contêiner para agrupar título e URL */
+.card.opened {
+    background-color: var(--md-sys-color-background);
+    border: 1px solid var(--md-sys-color-surface-variant);
+    box-shadow: none;
+}
+
+.card.opened .card-title,
+.card.opened .card-url {
+    opacity: 0.5;
+    text-decoration: line-through;
+}
+
+.card.opened .btn-icon {
+    border-color: var(--md-sys-color-surface-variant);
+    color: var(--md-sys-color-on-surface-variant);
+}
+
 .card-content {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    overflow: hidden; /* Garante que o texto longo não quebre o layout */
+    overflow: hidden;
 }
 
 .card-title {
@@ -168,15 +208,23 @@ textarea::placeholder {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-/* .card-actions foi removido */
 
 @media (max-width: 768px) {
     main {
         grid-template-columns: 1fr;
-        overflow-y: auto;
+        padding-bottom: 100px;
     }
     .column {
         height: auto;
         min-height: 300px;
+        overflow: visible;
+    }
+    body {
+        overflow: auto;
+        height: auto;
+    }
+    .fab-extended {
+        bottom: 16px;
+        right: 16px;
     }
 }

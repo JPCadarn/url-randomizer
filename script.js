@@ -2,6 +2,20 @@ const urlInput = document.getElementById('urlInput');
 const randomizeBtn = document.getElementById('randomizeBtn');
 const resultsContainer = document.getElementById('resultsContainer');
 
+let linksState = [];
+
+function loadFromStorage() {
+	const stored = localStorage.getItem('randomizer_links');
+	if (stored) {
+		linksState = JSON.parse(stored);
+		renderList();
+	}
+}
+
+function saveToStorage() {
+	localStorage.setItem('randomizer_links', JSON.stringify(linksState));
+}
+
 function shuffleArray(array) {
 	for (let i = array.length - 1; i > 0; i--) {
 		const j = Math.floor(Math.random() * (i + 1));
@@ -10,19 +24,22 @@ function shuffleArray(array) {
 	return array;
 }
 
-function createCard(url) {
-	let displayTitle = "Sem Título";
+function createCard(linkObj, index) {
+	let displayTitle;
 	try {
-		const urlObj = new URL(url);
-		displayTitle = urlObj.hostname.replace('www.', '');
+		const urlObj = new URL(linkObj.url);
+		displayTitle = urlObj.pathname.replaceAll('/', '').replaceAll('-', ' ')
 	} catch (e) {
-		displayTitle = url;
+		displayTitle = linkObj.url;
 	}
 
 	const card = document.createElement('div');
 	card.className = 'card';
 
-	// Criamos um contêiner para o texto
+	if (linkObj.opened) {
+		card.classList.add('opened');
+	}
+
 	const contentEl = document.createElement('div');
 	contentEl.className = 'card-content';
 
@@ -32,16 +49,27 @@ function createCard(url) {
 
 	const urlEl = document.createElement('div');
 	urlEl.className = 'card-url';
-	urlEl.textContent = url;
+	urlEl.textContent = linkObj.url;
 
 	contentEl.appendChild(titleEl);
 	contentEl.appendChild(urlEl);
 
 	const btn = document.createElement('button');
-	document.getElementById('randomizeBtn').classList.add('btn-primary');
 	btn.className = 'btn btn-icon';
-	btn.innerHTML = '<span class="material-symbols-outlined">open_in_new</span> Abrir';
-	btn.onclick = () => window.open(url, '_blank');
+
+	btn.innerHTML = linkObj.opened
+		? '<span class="material-symbols-outlined">check</span> Aberto'
+		: '<span class="material-symbols-outlined">open_in_new</span> Abrir';
+
+	btn.onclick = () => {
+		window.open(linkObj.url, '_blank');
+
+		linksState[index].opened = true;
+		saveToStorage();
+
+		card.classList.add('opened');
+		btn.innerHTML = '<span class="material-symbols-outlined">check</span> Aberto';
+	};
 
 	card.appendChild(contentEl);
 	card.appendChild(btn);
@@ -49,21 +77,31 @@ function createCard(url) {
 	return card;
 }
 
+function renderList() {
+	resultsContainer.innerHTML = '';
+	linksState.forEach((linkObj, index) => {
+		resultsContainer.appendChild(createCard(linkObj, index));
+	});
+}
+
 randomizeBtn.addEventListener('click', () => {
 	const text = urlInput.value;
 	if (!text.trim()) return;
 
 	const urls = text.split(/\n+/).map(u => u.trim()).filter(u => u.length > 0);
-
 	const shuffledUrls = shuffleArray(urls);
 
-	resultsContainer.innerHTML = '';
-
-	shuffledUrls.forEach(url => {
+	linksState = shuffledUrls.map(url => {
 		let validUrl = url;
 		if (!validUrl.startsWith('http')) {
 			validUrl = 'https://' + validUrl;
 		}
-		resultsContainer.appendChild(createCard(validUrl));
+		return { url: validUrl, opened: false };
 	});
+
+	saveToStorage();
+	renderList();
 });
+
+document.addEventListener('DOMContentLoaded', loadFromStorage);
+document.getElementById('randomizeBtn').classList.add('btn-primary');
