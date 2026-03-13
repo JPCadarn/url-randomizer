@@ -2,16 +2,12 @@
     --md-sys-color-background: #191210;
     --md-sys-color-surface: #201A18;
     --md-sys-color-surface-container: #251F1D;
-
     --md-sys-color-primary: #f75200;
     --md-sys-color-on-primary: #FFFFFF;
-
     --md-sys-color-error: #BA1A1A;
     --md-sys-color-on-error: #FFFFFF;
-
     --md-sys-color-outline: #A08C84;
     --md-sys-color-surface-variant: #52433E;
-
     --md-sys-color-on-surface: #EDE0DB;
     --md-sys-color-on-surface-variant: #D7C1B9;
 }
@@ -35,7 +31,6 @@ header {
     align-items: center;
     justify-content: space-between;
     gap: 24px;
-    elevation: below;
     box-shadow: 0 1px 2px rgba(0,0,0,0.2);
     flex-shrink: 0;
     z-index: 10;
@@ -59,7 +54,7 @@ header h1 {
     border-radius: 24px;
     display: flex;
     align-items: center;
-    padding: 0 16px;
+    padding: 0 8px 0 16px;
     height: 40px;
     gap: 8px;
     transition: border-color 0.2s;
@@ -91,11 +86,38 @@ header h1 {
     color: var(--md-sys-color-on-surface-variant);
 }
 
+.search-clear-btn {
+    background: transparent;
+    border: none;
+    color: var(--md-sys-color-on-surface-variant);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 50%;
+    visibility: hidden;
+}
+
+.search-clear-btn:hover {
+    background-color: var(--md-sys-color-surface-variant);
+    color: var(--md-sys-color-on-surface);
+}
+
+.search-clear-btn.visible {
+    visibility: visible;
+}
+
+.search-clear-btn .material-symbols-outlined {
+    font-size: 18px;
+}
+
 main {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 24px;
     padding: 24px;
+    padding-bottom: 24px;
     height: 100%;
     overflow: hidden;
     min-height: 0;
@@ -152,17 +174,12 @@ textarea {
 
 .input-actions {
     display: flex;
-    justify-content: space-between;
     gap: 12px;
     align-items: center;
     margin-top: auto;
     height: 56px;
     flex-shrink: 0;
     width: 100%;
-}
-
-.input-actions .btn {
-    flex: 1;
 }
 
 .btn {
@@ -180,22 +197,26 @@ textarea {
     justify-content: center;
     gap: 8px;
     transition: all 0.2s;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     flex-shrink: 0;
 }
+
 .btn:hover { opacity: 0.9; }
-.btn:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
+.btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+#addBtn {
+    flex: 2;
 }
 
-.btn-block {
-    width: 100%;
+#clearBtn, #clearWatchedBtn {
+    flex: 0 0 auto;
+    padding: 0 16px;
 }
+
+.btn-block { width: 100%; }
 
 .btn-text {
     background-color: transparent;
-    padding: 0 16px;
     border: 1px solid var(--md-sys-color-outline);
     color: var(--md-sys-color-on-surface);
 }
@@ -204,6 +225,7 @@ textarea {
     color: #FFB4AB;
     border-color: #FFB4AB;
 }
+
 .btn-danger:hover {
     background-color: var(--md-sys-color-error);
     color: var(--md-sys-color-on-error);
@@ -285,6 +307,7 @@ textarea {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
 .card-url {
     font-size: 12px;
     color: var(--md-sys-color-on-surface-variant);
@@ -310,6 +333,7 @@ textarea {
     opacity: 0.7;
     height: 100%;
 }
+
 .empty-state span { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
 .empty-state p { font-size: 16px; }
 
@@ -321,14 +345,18 @@ textarea {
     display: flex; align-items: center; justify-content: center;
     z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.2s;
 }
+
 .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
 .modal {
     background-color: var(--md-sys-color-surface-container);
     border-radius: 28px; padding: 24px; width: 100%; max-width: 320px;
     box-shadow: 0 4px 8px 3px rgba(0,0,0,0.15);
     transform: scale(0.9); transition: transform 0.2s;
 }
+
 .modal-overlay.active .modal { transform: scale(1); }
+
 .modal-header { display: flex; flex-direction: column; align-items: center; gap: 16px; margin-bottom: 16px; }
 .modal-icon { font-size: 32px; color: var(--md-sys-color-error); }
 .modal-title { font-size: 24px; font-weight: 400; text-align: center; }
@@ -354,6 +382,7 @@ textarea {
     font-family: 'Roboto', sans-serif;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
+
 .js-tooltip.visible { opacity: 1; }
 
 .spinner {

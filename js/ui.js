@@ -58,7 +58,6 @@ export class UIManager {
 
     createCard(linkObj) {
         const displayTitle = Utils.getDisplayTitle(linkObj);
-
         const card = document.createElement('div');
         card.className = 'card';
         if (linkObj.is_opened) card.classList.add('opened');
@@ -108,6 +107,8 @@ export class UIManager {
 
         const openBtn = document.createElement('button');
         openBtn.className = 'btn-icon';
+        openBtn.style.width = 'auto';
+        openBtn.style.padding = '0 12px';
 
         const updateOpenBtnState = (isOpened) => {
             if (isOpened) {
@@ -131,21 +132,16 @@ export class UIManager {
             if (!linkObj.is_opened) {
                 window.open(linkObj.url, '_blank');
             }
-
             linkObj.is_opened = !linkObj.is_opened;
-
             updateOpenBtnState(linkObj.is_opened);
-
             const text = linkObj.is_opened ? 'Marcar como não lido' : 'Abrir link';
             this.showTooltip(openBtn, text);
-
             await API.updateStatus(linkObj.id, linkObj.is_opened ? 1 : 0);
         };
 
         actionsGroup.appendChild(copyBtn);
         actionsGroup.appendChild(deleteBtn);
         actionsGroup.appendChild(openBtn);
-
         card.appendChild(contentEl);
         card.appendChild(actionsGroup);
 
@@ -168,7 +164,6 @@ export class UIManager {
     getInputUrls() {
         const text = this.input.value;
         if (!text.trim()) return [];
-        return text.split(/\n+/).map(u => u.trim()).filter(u => u.length > 0)
-                   .map(u => Utils.formatUrl(u));
+        return text.split(/\n+/).map(u => u.trim()).filter(u => u.length > 0).map(u => Utils.formatUrl(u));
     }
 }

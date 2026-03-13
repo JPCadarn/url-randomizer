@@ -1,19 +1,16 @@
 <?php
 require_once 'Database.php';
 
-class LinkController
-{
+class LinkController {
     private $db;
     private $conn;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->db = new Database();
         $this->conn = $this->db->getConnection();
     }
 
-    private function fetchTitle($url)
-    {
+    private function fetchTitle($url) {
         $context = stream_context_create([
             'http' => [
                 'method' => 'GET',
@@ -44,8 +41,7 @@ class LinkController
         return null;
     }
 
-    public function getAll()
-    {
+    public function getAll() {
         try {
             $query = "SELECT id, url, title, is_opened FROM links ORDER BY id ASC";
             $stmt = $this->conn->prepare($query);
@@ -62,8 +58,7 @@ class LinkController
         }
     }
 
-    public function create()
-    {
+    public function create() {
         $data = json_decode(file_get_contents("php://input"));
 
         if (!isset($data->urls) || !is_array($data->urls)) {
@@ -73,12 +68,18 @@ class LinkController
 
         try {
             $this->conn->beginTransaction();
-            $query = "INSERT INTO links (url, title) VALUES (?, ?)";
-            $stmt = $this->conn->prepare($query);
+
+            $checkStmt = $this->conn->prepare("SELECT id FROM links WHERE url = ? LIMIT 1");
+            $insertStmt = $this->conn->prepare("INSERT INTO links (url, title) VALUES (?, ?)");
 
             foreach ($data->urls as $url) {
+                $checkStmt->execute([$url]);
+                if ($checkStmt->fetch()) {
+                    continue;
+                }
+
                 $title = $this->fetchTitle($url);
-                $stmt->execute([$url, $title]);
+                $insertStmt->execute([$url, $title]);
             }
 
             $this->conn->commit();
@@ -89,8 +90,7 @@ class LinkController
         }
     }
 
-    public function delete()
-    {
+    public function delete() {
         $data = json_decode(file_get_contents("php://input"));
 
         if (!isset($data->id)) {
@@ -108,8 +108,7 @@ class LinkController
         }
     }
 
-    public function clearAll()
-    {
+    public function clearAll() {
         try {
             $query = "TRUNCATE TABLE links";
             $stmt = $this->conn->prepare($query);
@@ -120,8 +119,18 @@ class LinkController
         }
     }
 
-    public function updateStatus()
-    {
+    public function clearWatched() {
+        try {
+            $query = "DELETE FROM links WHERE is_opened = 1";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+            $this->response(['success' => true]);
+        } catch (Exception $e) {
+            $this->response(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function updateStatus() {
         $data = json_decode(file_get_contents("php://input"));
 
         if (!isset($data->id)) {
@@ -141,13 +150,11 @@ class LinkController
         }
     }
 
-    private function response($data, $status = 200)
-    {
+    private function response($data, $status = 200) {
         http_response_code($status);
         header('Content-Type: application/json');
         echo json_encode($data);
         exit;
     }
 }
-
 ?>
