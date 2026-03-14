@@ -15,10 +15,10 @@ const clearSearchBtn = document.getElementById('clearSearchBtn');
 
 let currentLinks = [];
 
-async function refreshList(shuffle = false) {
+async function refreshList() {
     try {
         let links = await API.getLinks();
-        if (shuffle) links = Utils.shuffleArray(links);
+        links = Utils.shuffleArray(links);
         currentLinks = links;
         applyFilterAndRender();
     } catch (error) {
@@ -71,7 +71,7 @@ addBtn.addEventListener('click', async () => {
 
 clearBtn.addEventListener('click', () => modal.open('clear'));
 clearWatchedBtn.addEventListener('click', () => modal.open('clearWatched'));
-randomizeBtn.addEventListener('click', () => refreshList(true));
+randomizeBtn.addEventListener('click', () => refreshList());
 
 modal.setOnConfirm(async (action, payload) => {
     if (action === 'delete') {
