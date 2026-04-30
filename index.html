@@ -29,16 +29,16 @@
 <main>
     <div class="column">
         <div class="input-wrapper">
-            <textarea id="urlInput" placeholder="Cole novas URLs aqui para adicionar à lista..."></textarea>
+            <textarea id="urlInput" placeholder="Cole novas URLs aqui para adicionar à lista da aba selecionada..."></textarea>
         </div>
 
         <div class="input-actions">
             <button class="btn btn-text btn-danger" id="clearBtn" title="Limpar Tudo">
                 <span class="material-symbols-outlined">delete_sweep</span>
             </button>
-            <button class="btn btn-text" id="clearWatchedBtn" title="Limpar Assistidos">
+            <button class="btn btn-text" id="clearWatchedBtn" title="Limpar Assistidos/Abertos">
                 <span class="material-symbols-outlined">playlist_remove</span>
-                Limpar Assistidos
+                Limpar Abertos
             </button>
             <button class="btn" id="addBtn">
                 <span class="material-symbols-outlined">add</span>
@@ -48,12 +48,16 @@
     </div>
 
     <div class="column">
-        <div id="resultsContainer">
+        <div class="tabs-container">
+            <button class="tab-btn active" data-type="video">Vídeos</button>
+            <button class="tab-btn" data-type="wishlist">Wishlist</button>
         </div>
+
+        <div id="resultsContainer"></div>
 
         <button class="btn btn-block" id="randomizeBtn">
             <span class="material-symbols-outlined">casino</span>
-            Randomizar
+            RANDOMIZAR
         </button>
     </div>
 </main>

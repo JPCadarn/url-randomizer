@@ -12,13 +12,24 @@ const clearWatchedBtn = document.getElementById('clearWatchedBtn');
 const randomizeBtn = document.getElementById('randomizeBtn');
 const searchInput = document.getElementById('searchInput');
 const clearSearchBtn = document.getElementById('clearSearchBtn');
+const tabBtns = document.querySelectorAll('.tab-btn');
 
 let currentLinks = [];
+let activeTab = 'video';
 
-async function refreshList() {
+tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        tabBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeTab = btn.dataset.type;
+        applyFilterAndRender();
+    });
+});
+
+async function refreshList(shuffle = false) {
     try {
         let links = await API.getLinks();
-        links = Utils.shuffleArray(links);
+        if (shuffle) links = Utils.shuffleArray(links);
         currentLinks = links;
         applyFilterAndRender();
     } catch (error) {
@@ -36,10 +47,12 @@ function applyFilterAndRender() {
         clearSearchBtn.classList.remove('visible');
     }
 
-    const filtered = currentLinks.filter(link =>
-        link.url.toLowerCase().includes(term) ||
-        (link.title && link.title.toLowerCase().includes(term))
-    );
+    const filtered = currentLinks.filter(link => {
+        const matchesTab = link.type === activeTab;
+        const matchesSearch = link.url.toLowerCase().includes(term) || (link.title && link.title.toLowerCase().includes(term));
+        return matchesTab && matchesSearch;
+    });
+
     ui.renderList(filtered);
 }
 
@@ -59,7 +72,7 @@ addBtn.addEventListener('click', async () => {
 
     ui.toggleLoading(true);
     try {
-        await API.addLinks(urls);
+        await API.addLinks(urls, activeTab);
         ui.clearInput();
         await refreshList();
     } catch (error) {
@@ -69,9 +82,9 @@ addBtn.addEventListener('click', async () => {
     }
 });
 
-clearBtn.addEventListener('click', () => modal.open('clear'));
-clearWatchedBtn.addEventListener('click', () => modal.open('clearWatched'));
-randomizeBtn.addEventListener('click', () => refreshList());
+clearBtn.addEventListener('click', () => modal.open('clear', { type: activeTab }));
+clearWatchedBtn.addEventListener('click', () => modal.open('clearWatched', { type: activeTab }));
+randomizeBtn.addEventListener('click', () => refreshList(true));
 
 modal.setOnConfirm(async (action, payload) => {
     if (action === 'delete') {
@@ -87,15 +100,14 @@ modal.setOnConfirm(async (action, payload) => {
         }
     } else if (action === 'clear') {
         try {
-            await API.clearLinks();
-            currentLinks = [];
-            ui.renderList([]);
+            await API.clearLinks(payload.type);
+            await refreshList();
         } catch (error) {
             console.error(error);
         }
     } else if (action === 'clearWatched') {
         try {
-            await API.clearWatched();
+            await API.clearWatched(payload.type);
             await refreshList();
         } catch (error) {
             console.error(error);

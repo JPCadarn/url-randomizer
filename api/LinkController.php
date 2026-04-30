@@ -43,7 +43,7 @@ class LinkController {
 
     public function getAll() {
         try {
-            $query = "SELECT id, url, title, is_opened FROM links ORDER BY id ASC";
+            $query = "SELECT id, url, title, type, is_opened FROM links ORDER BY id ASC";
             $stmt = $this->conn->prepare($query);
             $stmt->execute();
             $result = $stmt->fetchAll();
@@ -66,20 +66,22 @@ class LinkController {
             return;
         }
 
+        $type = isset($data->type) && in_array($data->type, ['video', 'wishlist']) ? $data->type : 'video';
+
         try {
             $this->conn->beginTransaction();
 
-            $checkStmt = $this->conn->prepare("SELECT id FROM links WHERE url = ? LIMIT 1");
-            $insertStmt = $this->conn->prepare("INSERT INTO links (url, title) VALUES (?, ?)");
+            $checkStmt = $this->conn->prepare("SELECT id FROM links WHERE url = ? AND type = ? LIMIT 1");
+            $insertStmt = $this->conn->prepare("INSERT INTO links (url, title, type) VALUES (?, ?, ?)");
 
             foreach ($data->urls as $url) {
-                $checkStmt->execute([$url]);
+                $checkStmt->execute([$url, $type]);
                 if ($checkStmt->fetch()) {
                     continue;
                 }
 
                 $title = $this->fetchTitle($url);
-                $insertStmt->execute([$url, $title]);
+                $insertStmt->execute([$url, $title, $type]);
             }
 
             $this->conn->commit();
@@ -109,10 +111,13 @@ class LinkController {
     }
 
     public function clearAll() {
+        $data = json_decode(file_get_contents("php://input"));
+        $type = isset($data->type) ? $data->type : 'video';
+
         try {
-            $query = "TRUNCATE TABLE links";
+            $query = "DELETE FROM links WHERE type = ?";
             $stmt = $this->conn->prepare($query);
-            $stmt->execute();
+            $stmt->execute([$type]);
             $this->response(['success' => true]);
         } catch (Exception $e) {
             $this->response(['error' => $e->getMessage()], 500);
@@ -120,10 +125,13 @@ class LinkController {
     }
 
     public function clearWatched() {
+        $data = json_decode(file_get_contents("php://input"));
+        $type = isset($data->type) ? $data->type : 'video';
+
         try {
-            $query = "DELETE FROM links WHERE is_opened = 1";
+            $query = "DELETE FROM links WHERE is_opened = 1 AND type = ?";
             $stmt = $this->conn->prepare($query);
-            $stmt->execute();
+            $stmt->execute([$type]);
             $this->response(['success' => true]);
         } catch (Exception $e) {
             $this->response(['error' => $e->getMessage()], 500);

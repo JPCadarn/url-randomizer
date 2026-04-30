@@ -3,10 +3,10 @@ export const API = {
         const response = await fetch('api/get_links.php');
         return await response.json();
     },
-    addLinks: async (urls) => {
+    addLinks: async (urls, type) => {
         await fetch('api/add_links.php', {
             method: 'POST',
-            body: JSON.stringify({ urls })
+            body: JSON.stringify({ urls, type })
         });
     },
     deleteLink: async (id) => {
@@ -15,11 +15,17 @@ export const API = {
             body: JSON.stringify({ id })
         });
     },
-    clearLinks: async () => {
-        await fetch('api/clear_links.php');
+    clearLinks: async (type) => {
+        await fetch('api/clear_links.php', {
+            method: 'POST',
+            body: JSON.stringify({ type })
+        });
     },
-    clearWatched: async () => {
-        await fetch('api/clear_watched.php');
+    clearWatched: async (type) => {
+        await fetch('api/clear_watched.php', {
+            method: 'POST',
+            body: JSON.stringify({ type })
+        });
     },
     updateStatus: async (id, status) => {
         await fetch('api/update_status.php', {
