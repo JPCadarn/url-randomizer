@@ -66,7 +66,7 @@ class LinkController {
             return;
         }
 
-        $type = isset($data->type) && in_array($data->type, ['video', 'wishlist']) ? $data->type : 'video';
+        $type = isset($data->type) && in_array($data->type, ['video', 'wishlist', 'permanent']) ? $data->type : 'video';
 
         try {
             $this->conn->beginTransaction();

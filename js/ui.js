@@ -60,7 +60,9 @@ export class UIManager {
         const displayTitle = Utils.getDisplayTitle(linkObj);
         const card = document.createElement('div');
         card.className = 'card';
-        if (linkObj.is_opened) card.classList.add('opened');
+        if (linkObj.is_opened && linkObj.type !== 'permanent') {
+            card.classList.add('opened');
+        }
 
         const contentEl = document.createElement('div');
         contentEl.className = 'card-content';
@@ -87,13 +89,39 @@ export class UIManager {
         copyBtn.onmouseleave = () => this.hideTooltip();
 
         copyBtn.onclick = async () => {
-            await navigator.clipboard.writeText(linkObj.url);
-            copyBtn.innerHTML = '<span class="material-symbols-outlined">check_small</span>';
-            this.showTooltip(copyBtn, 'Copiado!');
-            setTimeout(() => {
-                copyBtn.innerHTML = '<span class="material-symbols-outlined">content_copy</span>';
-                if(copyBtn.matches(':hover')) this.showTooltip(copyBtn, 'Copiar URL');
-            }, 2000);
+            let success = false;
+
+            if (navigator.clipboard && window.isSecureContext) {
+                try {
+                    await navigator.clipboard.writeText(linkObj.url);
+                    success = true;
+                } catch (err) {}
+            }
+
+            if (!success) {
+                const textArea = document.createElement("textarea");
+                textArea.value = linkObj.url;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-999999px";
+                textArea.style.top = "-999999px";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    success = true;
+                } catch (err) {}
+                textArea.remove();
+            }
+
+            if (success) {
+                copyBtn.innerHTML = '<span class="material-symbols-outlined">check_small</span>';
+                this.showTooltip(copyBtn, 'Copiado!');
+                setTimeout(() => {
+                    copyBtn.innerHTML = '<span class="material-symbols-outlined">content_copy</span>';
+                    if(copyBtn.matches(':hover')) this.showTooltip(copyBtn, 'Copiar URL');
+                }, 2000);
+            }
         };
 
         const deleteBtn = document.createElement('button');
@@ -111,6 +139,12 @@ export class UIManager {
         openBtn.style.padding = '0 12px';
 
         const updateOpenBtnState = (isOpened) => {
+            if (linkObj.type === 'permanent') {
+                openBtn.innerHTML = '<span class="material-symbols-outlined">open_in_new</span>';
+                card.classList.remove('opened');
+                return;
+            }
+
             if (isOpened) {
                 openBtn.innerHTML = '<span class="material-symbols-outlined">check</span>';
                 card.classList.add('opened');
@@ -123,19 +157,32 @@ export class UIManager {
         updateOpenBtnState(linkObj.is_opened);
 
         openBtn.onmouseenter = () => {
-            const text = linkObj.is_opened ? 'Marcar como não lido' : 'Abrir link';
+            let text = 'Abrir link';
+            if (linkObj.type !== 'permanent' && linkObj.is_opened) {
+                text = 'Marcar como não lido';
+            }
             this.showTooltip(openBtn, text);
         };
         openBtn.onmouseleave = () => this.hideTooltip();
 
         openBtn.onclick = async () => {
+            if (linkObj.type === 'permanent') {
+                window.open(linkObj.url, '_blank');
+                return;
+            }
+
             if (!linkObj.is_opened) {
                 window.open(linkObj.url, '_blank');
             }
             linkObj.is_opened = !linkObj.is_opened;
             updateOpenBtnState(linkObj.is_opened);
-            const text = linkObj.is_opened ? 'Marcar como não lido' : 'Abrir link';
+
+            let text = 'Abrir link';
+            if (linkObj.type !== 'permanent' && linkObj.is_opened) {
+                text = 'Marcar como não lido';
+            }
             this.showTooltip(openBtn, text);
+
             await API.updateStatus(linkObj.id, linkObj.is_opened ? 1 : 0);
         };
 

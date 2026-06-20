@@ -212,6 +212,13 @@ textarea {
     width: 100%;
 }
 
+.bottom-actions {
+    display: flex;
+    gap: 12px;
+    flex-shrink: 0;
+    width: 100%;
+}
+
 .btn {
     background-color: var(--md-sys-color-primary);
     color: var(--md-sys-color-on-primary);
@@ -228,7 +235,10 @@ textarea {
     gap: 8px;
     transition: all 0.2s;
     letter-spacing: 0.5px;
-    flex-shrink: 0;
+}
+
+.input-actions .btn, .bottom-actions .btn {
+    flex: 1;
 }
 
 .btn:hover { opacity: 0.9; }
@@ -240,8 +250,6 @@ textarea {
     flex: 0 0 auto;
     padding: 0 16px;
 }
-
-.btn-block { width: 100%; }
 
 .btn-text {
     background-color: transparent;

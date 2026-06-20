@@ -10,11 +10,13 @@ const addBtn = document.getElementById('addBtn');
 const clearBtn = document.getElementById('clearBtn');
 const clearWatchedBtn = document.getElementById('clearWatchedBtn');
 const randomizeBtn = document.getElementById('randomizeBtn');
+const openAllBtn = document.getElementById('openAllBtn');
 const searchInput = document.getElementById('searchInput');
 const clearSearchBtn = document.getElementById('clearSearchBtn');
 const tabBtns = document.querySelectorAll('.tab-btn');
 
 let currentLinks = [];
+let filteredLinks = [];
 let activeTab = 'video';
 
 tabBtns.forEach(btn => {
@@ -47,13 +49,13 @@ function applyFilterAndRender() {
         clearSearchBtn.classList.remove('visible');
     }
 
-    const filtered = currentLinks.filter(link => {
+    filteredLinks = currentLinks.filter(link => {
         const matchesTab = link.type === activeTab;
         const matchesSearch = link.url.toLowerCase().includes(term) || (link.title && link.title.toLowerCase().includes(term));
         return matchesTab && matchesSearch;
     });
 
-    ui.renderList(filtered);
+    ui.renderList(filteredLinks);
 }
 
 searchInput.addEventListener('input', () => {
@@ -85,6 +87,32 @@ addBtn.addEventListener('click', async () => {
 clearBtn.addEventListener('click', () => modal.open('clear', { type: activeTab }));
 clearWatchedBtn.addEventListener('click', () => modal.open('clearWatched', { type: activeTab }));
 randomizeBtn.addEventListener('click', () => refreshList(true));
+
+openAllBtn.addEventListener('click', () => {
+    console.log('aisudhfiuasdhfisuahf')
+    if (filteredLinks.length === 0) return;
+
+    let popupBlocked = false;
+
+    filteredLinks.forEach(link => {
+        const openedWindow = window.open(link.url, '_blank');
+
+        if (!openedWindow) {
+            popupBlocked = true;
+        }
+
+        if (link.type !== 'permanent' && !link.is_opened) {
+            link.is_opened = true;
+            API.updateStatus(link.id, 1).catch(err => console.error(err));
+        }
+    });
+
+    ui.renderList(filteredLinks);
+
+    if (popupBlocked) {
+        alert("O seu navegador bloqueou a abertura de múltiplas abas. Permita os pop-ups para este site e tente novamente.");
+    }
+});
 
 modal.setOnConfirm(async (action, payload) => {
     if (action === 'delete') {
